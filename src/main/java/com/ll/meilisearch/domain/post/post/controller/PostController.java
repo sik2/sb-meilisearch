@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.Config;
 import com.meilisearch.sdk.Index;
+import com.meilisearch.sdk.SearchRequest;
+import com.meilisearch.sdk.model.SearchResult;
+import com.meilisearch.sdk.model.Searchable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +23,9 @@ import java.util.List;
 @RequestMapping("/post")
 @RequiredArgsConstructor
 public class PostController {
+    // Meilisearch 클라이언트 설정
+    Client client = new Client(new Config("http://localhost:7700", "masterKey"));
+
     @Data
     @AllArgsConstructor
     public static class Movie {
@@ -27,6 +34,7 @@ public class PostController {
         private String[] genres;
     }
 
+    @SneakyThrows
     @GetMapping("/makeSearchData")
     @ResponseBody
     public String makeSearchData() {
@@ -43,21 +51,38 @@ public class PostController {
         movies.add(new Movie("6", "Philadelphia", new String[]{"Drama"}));
         movies.add(new Movie("7", "Movie 7", new String[]{"Drama"}));
 
-        try {
-            // List를 JSON 문자열로 변환
-            String documents = objectMapper.writeValueAsString(movies);
+        // List를 JSON 문자열로 변환
+        String documents = objectMapper.writeValueAsString(movies);
 
-            // Meilisearch 클라이언트 설정
-            Client client = new Client(new Config("http://localhost:7700", "masterKey"));
-            Index index = client.index("movies");
+        // Meilisearch 클라이언트 설정
+        Index index = client.index("movies");
 
-            // 문서 추가
-            index.addDocuments(documents); // => { "taskUid": 0 }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "실패";
-        }
+        // 문서 추가
+        index.addDocuments(documents); // => { "taskUid": 0 }
 
         return "성공";
+    }
+
+    @GetMapping("/search")
+    @ResponseBody
+    public SearchResult search(String kw) {
+        Index index = client.index("movies");
+        SearchResult results = index.search(kw);
+
+        return results;
+    }
+
+    @GetMapping("/customSearch")
+    @ResponseBody
+    public Searchable customSearch(String kw) {
+        Index index = client.index("movies");
+
+        SearchResult search = (SearchResult)index.search(
+                new SearchRequest(kw) // 검색어를 기반으로 검색 요청 생성
+                        .setShowMatchesPosition(true) // 검색 결과에서 일치하는 위치 정보 포함
+                        .setAttributesToHighlight(new String[]{"title"}) // "title" 속성을 강조 표시
+        );
+
+        return search;
     }
 }
