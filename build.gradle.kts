@@ -34,6 +34,9 @@ dependencies {
     runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
     //메일리서치
     implementation("com.meilisearch.sdk:meilisearch-java:0.14.2")
+    // DB 관련
+    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly ("com.h2database:h2")
 }
 
 tasks.withType<Test> {

@@ -38,3 +38,9 @@ out/
 
 ### Docker Volume ###
 meili_data
+
+### Custom ###
+db_dev.mv.db
+db_dev.trace.db
+src/main/resources/application-secret.yml
+src/main/generated
