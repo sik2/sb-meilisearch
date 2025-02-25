@@ -30,6 +30,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // 도커컴포즈
+    runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
 }
 
 tasks.withType<Test> {
