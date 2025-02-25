@@ -32,6 +32,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // 도커컴포즈
     runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
+    //메일리서치
+    implementation("com.meilisearch.sdk:meilisearch-java:0.14.2")
 }
 
 tasks.withType<Test> {
