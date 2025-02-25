@@ -1,8 +1,10 @@
 package com.ll.meilisearch.domain.post.post.service;
 
 import com.ll.meilisearch.domain.post.post.entity.Post;
+import com.ll.meilisearch.domain.post.post.event.AfterPostCreatedEvent;
 import com.ll.meilisearch.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostService {
     private final PostRepository postRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public Post write(String subject, String body) {
@@ -19,6 +22,8 @@ public class PostService {
                         .subject(subject)
                         .body(body)
                         .build());
+
+        publisher.publishEvent(new AfterPostCreatedEvent(this, post));
 
         return post;
     }
