@@ -12,6 +12,6 @@ public class PostEventListener {
     @EventListener
     @Async
     public void listen(AfterPostCreatedEvent event) {
-        System.out.println("event = " + event.getPost());
+        System.out.println("event = " + event.getPostDto());
     }
 }
